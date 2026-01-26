@@ -1,143 +1,174 @@
 import { PrismaClient } from '@prisma/client';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Iniciando seed do banco de dados...');
+  console.log('🌱 Iniciando seed do banco de dados...\n');
 
-  // Criar cidade de exemplo
-  const cidade = await prisma.cidade.create({
-    data: {
-      nome: 'São Paulo',
-      gentilico: 'Paulistano',
-      dataFundacao: new Date('1554-01-25'),
-      dataAniversario: new Date('2024-01-25'),
-      breveHistorico: 'São Paulo foi fundada em 25 de janeiro de 1554 por padres jesuítas. Iniciou-se como uma pequena missão jesuíta e cresceu para se tornar a maior cidade do Brasil e uma das maiores metrópoles do mundo. Sua história é marcada pelo ciclo do café, imigração europeia e asiática, e rápida industrialização no século XX.',
-      padroeiro: 'São Paulo Apóstolo',
-      pratoTipico: 'Virado à Paulista',
-      fotoPerfil: null,
-      fotoBackground: null,
-    },
-  });
+  // Verificar se o arquivo de dados existe
+  const dataPath = path.join(__dirname, '..', 'scripts', 'dados-exportados.json');
 
-  console.log('Cidade criada:', cidade.nome);
+  if (!fs.existsSync(dataPath)) {
+    console.log('⚠️ Arquivo dados-exportados.json não encontrado. Pulando seed.');
+    return;
+  }
 
-  // Criar dados demográficos
-  const demograficos = await prisma.dadosDemograficos.create({
-    data: {
-      cidadeId: cidade.id,
-      percentualRural: 5.5,
-      percentualUrbano: 94.5,
-      percentualCatolico: 58.2,
-      percentualEspirita: 3.5,
-      percentualEvangelico: 22.1,
-      percentualSemReligiao: 16.2,
-      religiaoPredominante: 'Católico',
-      idh: 0.805,
-      taxaAlfabetizacao: 96.5,
-      principaisBairros: JSON.stringify([
-        'Pinheiros',
-        'Vila Mariana',
-        'Mooca',
-        'Santana',
-        'Butantã',
-        'Ipiranga',
-        'Penha',
-        'Santo Amaro',
-      ]),
-    },
-  });
+  const cidades = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
+  console.log(`📊 Carregando ${cidades.length} cidades...\n`);
 
-  console.log('Dados demográficos criados');
+  for (const cidade of cidades) {
+    try {
+      // Criar cidade
+      const novaCidade = await prisma.cidade.create({
+        data: {
+          nome: cidade.nome,
+          gentilico: cidade.gentilico,
+          dataFundacao: new Date(cidade.dataFundacao),
+          dataAniversario: new Date(cidade.dataAniversario),
+          breveHistorico: cidade.breveHistorico,
+          padroeiro: cidade.padroeiro,
+          pratoTipico: cidade.pratoTipico,
+          fotoPerfil: cidade.fotoPerfil,
+          fotoBackground: cidade.fotoBackground,
+        },
+      });
 
-  // Criar eventos
-  const evento = await prisma.eventoProximo.create({
-    data: {
-      cidadeId: cidade.id,
-      festaTradicional: 'Aniversário de São Paulo',
-      dataFeriado: new Date('2025-01-25'),
-      fotos: JSON.stringify([]),
-    },
-  });
+      // Dados Demográficos
+      if (cidade.dadosDemograficos) {
+        await prisma.dadosDemograficos.create({
+          data: {
+            cidadeId: novaCidade.id,
+            percentualRural: cidade.dadosDemograficos.percentualRural,
+            percentualUrbano: cidade.dadosDemograficos.percentualUrbano,
+            percentualCatolico: cidade.dadosDemograficos.percentualCatolico,
+            percentualEspirita: cidade.dadosDemograficos.percentualEspirita,
+            percentualEvangelico: cidade.dadosDemograficos.percentualEvangelico,
+            percentualSemReligiao: cidade.dadosDemograficos.percentualSemReligiao,
+            religiaoPredominante: cidade.dadosDemograficos.religiaoPredominante,
+            idh: cidade.dadosDemograficos.idh,
+            taxaAlfabetizacao: cidade.dadosDemograficos.taxaAlfabetizacao,
+            principaisBairros: cidade.dadosDemograficos.principaisBairros,
+          },
+        });
+      }
 
-  console.log('Evento criado:', evento.festaTradicional);
+      // Dados Votação
+      if (cidade.dadosVotacao) {
+        await prisma.dadosVotacao.create({
+          data: {
+            cidadeId: novaCidade.id,
+            votosPauloAlexandre2022: cidade.dadosVotacao.votosPauloAlexandre2022,
+            votosOutrosDeputadosFederais2022: cidade.dadosVotacao.votosOutrosDeputadosFederais2022,
+            votosPSDBTotal2022: cidade.dadosVotacao.votosPSDBTotal2022,
+            votosPSDTotal2022: cidade.dadosVotacao.votosPSDTotal2022,
+            votosOutrosPartidos2022: cidade.dadosVotacao.votosOutrosPartidos2022,
+            votosPresidente2022: cidade.dadosVotacao.votosPresidente2022,
+            votosGovernador2022: cidade.dadosVotacao.votosGovernador2022,
+            pesquisasEleitorais: cidade.dadosVotacao.pesquisasEleitorais,
+            votosLegendaPSDB45: cidade.dadosVotacao.votosLegendaPSDB45,
+            votosLegendaPSD55: cidade.dadosVotacao.votosLegendaPSD55,
+          },
+        });
+      }
 
-  // Criar dados de votação
-  const votacao = await prisma.dadosVotacao.create({
-    data: {
-      cidadeId: cidade.id,
-      votosPauloAlexandre2022: 45230,
-      votosOutrosDeputadosFederais2022: 1250000,
-      votosPSDBTotal2022: 320000,
-      votosPSDTotal2022: 280000,
-      votosOutrosPartidos2022: 1800000,
-      votosPresidente2022: JSON.stringify({
-        'Luiz Inácio Lula da Silva': 3200000,
-        'Jair Bolsonaro': 2800000,
-      }),
-      votosGovernador2022: JSON.stringify({
-        'Tarcísio de Freitas': 2900000,
-        'Fernando Haddad': 3100000,
-      }),
-      pesquisasEleitorais: null,
-      votosLegendaPSDB45: 45000,
-      votosLegendaPSD55: 38000,
-    },
-  });
+      // Eventos
+      for (const evento of cidade.eventosProximos || []) {
+        await prisma.eventoProximo.create({
+          data: {
+            cidadeId: novaCidade.id,
+            festaTradicional: evento.festaTradicional,
+            dataFeriado: new Date(evento.dataFeriado),
+            fotos: evento.fotos,
+          },
+        });
+      }
 
-  console.log('Dados de votação criados');
+      // Deputados Federais
+      for (const deputado of cidade.deputadosFederais || []) {
+        await prisma.deputadoFederal.create({
+          data: {
+            cidadeId: novaCidade.id,
+            nome: deputado.nome,
+            nomeUrna: deputado.nomeUrna,
+            partido: deputado.partido,
+            numeroUrna: deputado.numeroUrna,
+            votos2022: deputado.votos2022,
+            eleito: deputado.eleito,
+          },
+        });
+      }
 
-  // Criar emendas
-  const emenda = await prisma.emenda.create({
-    data: {
-      cidadeId: cidade.id,
-      descricao: 'Construção de nova unidade básica de saúde no bairro Jardim São Paulo',
-      entidadeBeneficiada: 'Prefeitura Municipal de São Paulo - Secretaria de Saúde',
-      valorEmenda: 2500000.00,
-      valorEmpenhado: 2500000.00,
-    },
-  });
+      // Emendas
+      for (const emenda of cidade.emendas || []) {
+        await prisma.emenda.create({
+          data: {
+            cidadeId: novaCidade.id,
+            codigoEmenda: emenda.codigoEmenda,
+            numeroEmenda: emenda.numeroEmenda,
+            anoEmenda: emenda.anoEmenda,
+            tipoEmenda: emenda.tipoEmenda,
+            autor: emenda.autor,
+            localidadeGasto: emenda.localidadeGasto,
+            funcao: emenda.funcao,
+            subfuncao: emenda.subfuncao,
+            descricao: emenda.descricao,
+            entidadeBeneficiada: emenda.entidadeBeneficiada,
+            valorEmenda: emenda.valorEmenda,
+            valorEmpenhado: emenda.valorEmpenhado,
+            valorLiquidado: emenda.valorLiquidado,
+            valorPago: emenda.valorPago,
+          },
+        });
+      }
 
-  console.log('Emenda criada');
+      // Lideranças
+      for (const lideranca of cidade.liderancas || []) {
+        await prisma.lideranca.create({
+          data: {
+            cidadeId: novaCidade.id,
+            nomeLideranca: lideranca.nomeLideranca,
+            fotoLideranca: lideranca.fotoLideranca,
+            nomeGestor: lideranca.nomeGestor,
+            cargo: lideranca.cargo,
+            partido: lideranca.partido,
+            historicoComPAB: lideranca.historicoComPAB,
+            votos2024: lideranca.votos2024,
+            votosPrevistos2026: lideranca.votosPrevistos2026,
+            dataVisitaGestor: lideranca.dataVisitaGestor ? new Date(lideranca.dataVisitaGestor) : null,
+          },
+        });
+      }
 
-  // Criar liderança
-  const lideranca = await prisma.lideranca.create({
-    data: {
-      cidadeId: cidade.id,
-      nome: 'João Silva',
-      cargo: 'Vereador',
-      partido: 'PSDB',
-      historicoComPAB: 'Parceria estabelecida desde 2020, com apoio em diversas iniciativas municipais e estaduais. Atuação conjunta em projetos de infraestrutura e educação.',
-      votos2024: 15420,
-      votosPrevistos2026: 18500,
-      dataVisitaGestor: new Date('2024-03-15'),
-    },
-  });
+      // Pautas
+      for (const pauta of cidade.pautas || []) {
+        await prisma.pauta.create({
+          data: {
+            cidadeId: novaCidade.id,
+            dataPublicacao: new Date(pauta.dataPublicacao),
+            urlFonte: pauta.urlFonte,
+            titulo: pauta.titulo,
+            resumoProblema: pauta.resumoProblema,
+            localizacaoEspecifica: pauta.localizacaoEspecifica,
+            categoria: pauta.categoria,
+            volumeMencoes: pauta.volumeMencoes,
+            nivelUrgencia: pauta.nivelUrgencia,
+            sentimentoPredominante: pauta.sentimentoPredominante,
+            autoridadeResponsavel: pauta.autoridadeResponsavel,
+            statusResposta: pauta.statusResposta,
+            tempoAtraso: pauta.tempoAtraso,
+          },
+        });
+      }
 
-  console.log('Liderança criada:', lideranca.nome);
+      console.log(`✅ ${cidade.nome}`);
+    } catch (error: any) {
+      console.log(`❌ Erro em ${cidade.nome}: ${error.message}`);
+    }
+  }
 
-  // Criar pauta
-  const pauta = await prisma.pauta.create({
-    data: {
-      cidadeId: cidade.id,
-      dataPublicacao: new Date('2024-11-20'),
-      urlFonte: 'https://exemplo.com/noticia',
-      titulo: 'Falta de iluminação pública no bairro Jardim Aurora',
-      resumoProblema: 'Moradores do bairro Jardim Aurora relatam falta de iluminação pública há mais de 3 meses, causando insegurança e dificultando a circulação noturna.',
-      localizacaoEspecifica: 'Jardim Aurora - Ruas sem iluminação',
-      categoria: 'Infraestrutura',
-      volumeMencoes: 350,
-      nivelUrgencia: 4,
-      sentimentoPredominante: 'Negativo',
-      autoridadeResponsavel: 'Prefeitura Municipal - Secretaria de Obras',
-      statusResposta: 'Em análise',
-      tempoAtraso: 45,
-    },
-  });
-
-  console.log('Pauta criada:', pauta.titulo);
-
-  console.log('Seed concluído com sucesso!');
+  console.log('\n🎉 Seed concluído!');
 }
 
 main()
