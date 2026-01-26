@@ -83,7 +83,7 @@ export default function CalendarioEventos({ data }: CalendarioEventosProps) {
 
               {fotos && fotos.length > 0 && (
                 <div className="grid grid-cols-3 gap-2">
-                  {fotos.slice(0, 3).map((foto, fotoIndex) => (
+                  {fotos.slice(0, 3).map((foto: string, fotoIndex: number) => (
                     <motion.div
                       key={fotoIndex}
                       whileHover={{ scale: 1.1 }}
