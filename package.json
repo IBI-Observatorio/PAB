@@ -1,0 +1,49 @@
+{
+  "name": "pab-webapp",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.1",
+    "@prisma/client": "^6.2.1",
+    "adm-zip": "^0.5.16",
+    "axios": "^1.13.2",
+    "csv-parser": "^3.2.0",
+    "date-fns": "^3.6.0",
+    "framer-motion": "^11.15.0",
+    "next": "^15.1.4",
+    "next-pwa": "^5.6.0",
+    "openai": "^6.16.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.2",
+    "react-input-mask": "^2.0.4",
+    "recharts": "^2.15.0",
+    "unzipper": "^0.12.3",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "@types/react-input-mask": "^3.0.5",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.18.0",
+    "eslint-config-next": "^15.1.4",
+    "postcss": "^8.5.1",
+    "prisma": "^6.2.1",
+    "tailwindcss": "^3.4.17",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2",
+    "xlsx": "^0.18.5"
+  },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  }
+}

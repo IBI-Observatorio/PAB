@@ -1,0 +1,192 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Cidade {
+  id                       Int       @id @default(autoincrement())
+  nome                     String
+  gentilico                String
+  dataFundacao             DateTime
+  dataAniversario          DateTime
+  breveHistorico           String
+  padroeiro                String
+  pratoTipico              String
+  fotoPerfil               String?
+  fotoBackground           String?
+
+  // Relacionamentos
+  dadosDemograficos        DadosDemograficos?
+  eventosProximos          EventoProximo[]
+  dadosVotacao             DadosVotacao?
+  deputadosFederais        DeputadoFederal[]
+  emendas                  Emenda[]
+  liderancas               Lideranca[]
+  pautas                   Pauta[]
+
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
+  @@map("cidades")
+}
+
+model DadosDemograficos {
+  id                       Int       @id @default(autoincrement())
+  cidadeId                 Int       @unique
+  cidade                   Cidade    @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
+
+  percentualRural          Float
+  percentualUrbano         Float
+
+  percentualCatolico       Float
+  percentualEspirita       Float
+  percentualEvangelico     Float
+  percentualSemReligiao    Float
+  religiaoPredominante     String
+
+  idh                      Float
+  taxaAlfabetizacao        Float     // Taxa de alfabetização % (fonte: IBGE Censo)
+
+  principaisBairros        String    // JSON array
+
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
+  @@map("dados_demograficos")
+}
+
+model EventoProximo {
+  id                       Int       @id @default(autoincrement())
+  cidadeId                 Int
+  cidade                   Cidade    @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
+
+  festaTradicional         String
+  dataFeriado              DateTime
+  fotos                    String    // JSON array
+
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
+  @@map("eventos_proximos")
+}
+
+model DadosVotacao {
+  id                                Int       @id @default(autoincrement())
+  cidadeId                          Int       @unique
+  cidade                            Cidade    @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
+
+  votosPauloAlexandre2022           Int
+  votosOutrosDeputadosFederais2022  Int
+  votosPSDBTotal2022                Int
+  votosPSDTotal2022                 Int
+  votosOutrosPartidos2022           Int
+
+  votosPresidente2022               String    // JSON
+  votosGovernador2022               String    // JSON
+  pesquisasEleitorais               String?   // JSON
+
+  votosLegendaPSDB45                Int
+  votosLegendaPSD55                 Int
+
+  createdAt                         DateTime  @default(now())
+  updatedAt                         DateTime  @updatedAt
+
+  @@map("dados_votacao")
+}
+
+model Emenda {
+  id                       Int       @id @default(autoincrement())
+  cidadeId                 Int
+  cidade                   Cidade    @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
+
+  codigoEmenda             String?   // Código único da emenda no Portal da Transparência
+  numeroEmenda             String?   // Número da emenda
+  anoEmenda                Int?      // Ano da emenda
+  tipoEmenda               String?   // Tipo da emenda (Individual, Bancada, Comissão, Relator)
+  autor                    String?   // Nome do autor (deputado)
+  localidadeGasto          String?   // Município/localidade do gasto
+  funcao                   String?   // Função orçamentária
+  subfuncao                String?   // Subfunção orçamentária
+
+  descricao                String
+  entidadeBeneficiada      String
+  valorEmenda              Float
+  valorEmpenhado           Float
+  valorLiquidado           Float     @default(0)  // Valor liquidado
+  valorPago                Float     @default(0)  // Valor pago
+
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
+  @@map("emendas")
+}
+
+model Lideranca {
+  id                       Int       @id @default(autoincrement())
+  cidadeId                 Int
+  cidade                   Cidade    @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
+
+  nomeLideranca            String?   // Nome da liderança política
+  fotoLideranca            String?   // URL/caminho da foto da liderança
+  nomeGestor               String    // Nome do gestor responsável
+  cargo                    String
+  partido                  String
+  historicoComPAB          String
+  votos2024                Int
+  votosPrevistos2026       Int
+  dataVisitaGestor         DateTime?
+
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
+  @@map("liderancas")
+}
+
+model Pauta {
+  id                       Int       @id @default(autoincrement())
+  cidadeId                 Int
+  cidade                   Cidade    @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
+
+  dataPublicacao           DateTime
+  urlFonte                 String
+  titulo                   String
+  resumoProblema           String
+  localizacaoEspecifica    String
+  categoria                String
+  volumeMencoes            Int
+  nivelUrgencia            Int
+  sentimentoPredominante   String
+  autoridadeResponsavel    String
+  statusResposta           String
+  tempoAtraso              Int
+
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
+  @@map("pautas")
+}
+
+model DeputadoFederal {
+  id                       Int       @id @default(autoincrement())
+  cidadeId                 Int
+  cidade                   Cidade    @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
+
+  nome                     String
+  nomeUrna                 String
+  partido                  String
+  numeroUrna               String
+  votos2022                Int
+  eleito                   Boolean   @default(false)
+
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
+  @@map("deputados_federais")
+}
