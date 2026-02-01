@@ -10,6 +10,7 @@ interface DeputadoFederal {
   partido: string;
   numeroUrna: string;
   votos2022: number;
+  posicao: number;
   eleito: boolean;
 }
 
@@ -63,8 +64,10 @@ export default function Votacao({ data }: VotacaoProps) {
     ? JSON.parse(votacaoData.votosGovernador2022)
     : votacaoData?.votosGovernador2022;
 
-  // Top 5 deputados
-  const top5Deputados = deputados.slice(0, 5);
+  // Separar deputados: top 5 (posicao <= 5) e Paulo Alexandre
+  const top5Deputados = deputados
+    .filter(d => d.posicao <= 5)
+    .sort((a, b) => a.posicao - b.posicao);
 
   // Encontrar Paulo Alexandre Barbosa
   const pauloAlexandre = deputados.find(d =>
@@ -72,13 +75,7 @@ export default function Votacao({ data }: VotacaoProps) {
   );
 
   // Verificar se Paulo Alexandre está no top 5
-  const pauloNoTop5 = top5Deputados.some(d => d.id === pauloAlexandre?.id);
-
-  // Posição de Paulo Alexandre (se não estiver no top 5)
-  let posicaoPaulo = -1;
-  if (pauloAlexandre && !pauloNoTop5) {
-    posicaoPaulo = deputados.findIndex(d => d.id === pauloAlexandre.id) + 1;
-  }
+  const pauloNoTop5 = pauloAlexandre ? pauloAlexandre.posicao <= 5 : false;
 
   const partidosData = votacaoData ? [
     { partido: 'PSDB', votos: votacaoData.votosPSDBTotal2022 },
@@ -119,12 +116,12 @@ export default function Votacao({ data }: VotacaoProps) {
               >
                 <div className="flex items-center gap-4">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold ${
-                    index === 0 ? 'bg-yellow-500/30 text-yellow-400' :
-                    index === 1 ? 'bg-gray-400/30 text-gray-300' :
-                    index === 2 ? 'bg-orange-600/30 text-orange-400' :
+                    deputado.posicao === 1 ? 'bg-yellow-500/30 text-yellow-400' :
+                    deputado.posicao === 2 ? 'bg-gray-400/30 text-gray-300' :
+                    deputado.posicao === 3 ? 'bg-orange-600/30 text-orange-400' :
                     'bg-blue-500/20 text-blue-300'
                   }`}>
-                    {index + 1}°
+                    {deputado.posicao}°
                   </div>
                   <div>
                     <p className="font-semibold text-white">{deputado.nomeUrna}</p>
@@ -160,7 +157,7 @@ export default function Votacao({ data }: VotacaoProps) {
           <div className="bg-green-500/10 rounded-lg p-4 flex items-center justify-between">
             <div>
               <p className="font-semibold text-white">{pauloAlexandre.nomeUrna}</p>
-              <p className="text-sm text-gray-400">{pauloAlexandre.partido} • {posicaoPaulo}° colocado</p>
+              <p className="text-sm text-gray-400">{pauloAlexandre.partido} • {pauloAlexandre.posicao}° colocado</p>
             </div>
             <div className="text-right">
               <p className="text-2xl font-bold text-green-400">{pauloAlexandre.votos2022.toLocaleString('pt-BR')}</p>

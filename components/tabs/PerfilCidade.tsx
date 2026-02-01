@@ -75,19 +75,19 @@ export default function PerfilCidade({ data }: PerfilCidadeProps) {
               {data.fotoPerfil ? (
                 <img
                   src={data.fotoPerfil}
-                  alt={data.nome}
+                  alt={data.nome || 'Cidade'}
                   className="w-full h-full object-cover"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-primary-medium">
-                  {data.nome.charAt(0)}
+                  {data.nome?.charAt(0) || '?'}
                 </div>
               )}
             </div>
           </motion.div>
           <div className="flex-1 pb-2">
-            <h1 className="text-4xl font-bold text-white mb-1">{data.nome}</h1>
-            <p className="text-xl text-gray-300">{data.gentilico}</p>
+            <h1 className="text-4xl font-bold text-white mb-1">{data.nome || 'Cidade'}</h1>
+            <p className="text-xl text-gray-300">{data.gentilico || ''}</p>
           </div>
         </div>
       </motion.div>

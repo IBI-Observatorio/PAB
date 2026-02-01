@@ -11,7 +11,6 @@ interface DadosDemograficosData {
   percentualEvangelico: number;
   percentualSemReligiao: number;
   religiaoPredominante: string;
-  idh: number;
   taxaAlfabetizacao: number;
   principaisBairros: string | string[];
 }
@@ -198,48 +197,27 @@ export default function DadosDemograficos({ data }: DadosDemograficosProps) {
         </div>
       </motion.div>
 
-      {/* IDH e Escolaridade */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="card card-hover"
-        >
-          <div className="flex items-center gap-4">
-            <div className="p-4 bg-green-500/20 rounded-lg">
-              <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            </div>
-            <div className="flex-1">
-              <h3 className="text-sm text-gray-400 mb-1">IDH</h3>
-              <p className="text-3xl font-bold text-green-400">{Number(data.idh).toFixed(3)}</p>
-            </div>
+      {/* Escolaridade */}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="card card-hover"
+      >
+        <div className="flex items-center gap-4">
+          <div className="p-4 bg-blue-500/20 rounded-lg">
+            <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
+            </svg>
           </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="card card-hover"
-        >
-          <div className="flex items-center gap-4">
-            <div className="p-4 bg-blue-500/20 rounded-lg">
-              <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
-              </svg>
-            </div>
-            <div className="flex-1">
-              <h3 className="text-sm text-gray-400 mb-1">Taxa de Alfabetização</h3>
-              <p className="text-3xl font-bold text-blue-400">{Number(data.taxaAlfabetizacao).toFixed(2)}%</p>
-            </div>
+          <div className="flex-1">
+            <h3 className="text-sm text-gray-400 mb-1">Taxa de Alfabetização</h3>
+            <p className="text-3xl font-bold text-blue-400">{Number(data.taxaAlfabetizacao).toFixed(2)}%</p>
           </div>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
 
     </motion.div>
   );

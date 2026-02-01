@@ -10,6 +10,7 @@ import Votacao from '@/components/tabs/Votacao';
 import Emendas from '@/components/tabs/Emendas';
 import Liderancas from '@/components/tabs/Liderancas';
 import Pautas from '@/components/tabs/Pautas';
+import Relatorios from '@/components/tabs/Relatorios';
 
 const tabs = [
   { id: 1, name: 'Perfil da Cidade', icon: '🏙️' },
@@ -19,6 +20,7 @@ const tabs = [
   { id: 5, name: 'Emendas', icon: '💰' },
   { id: 6, name: 'Lideranças', icon: '👥' },
   { id: 7, name: 'Pautas', icon: '⚠️' },
+  { id: 8, name: 'Relatórios', icon: '📄' },
 ];
 
 export default function Home() {
@@ -49,6 +51,11 @@ export default function Home() {
   };
 
   const renderTabContent = () => {
+    // Aba de Relatórios tem seu próprio seletor de cidade, funciona independente
+    if (activeTab === 8) {
+      return <Relatorios currentCityId={selectedCity} />;
+    }
+
     if (loading) {
       return (
         <div className="flex items-center justify-center py-20">
@@ -75,13 +82,17 @@ export default function Home() {
       case 2:
         return <DadosDemograficos data={cityData.dadosDemograficos} />;
       case 3:
-        return <CalendarioEventos data={cityData.eventosProximos || []} />;
+        return <CalendarioEventos
+          data={cityData.eventosProximos || []}
+          datasHistoricas={cityData.datasHistoricas}
+          periodoFestas={cityData.periodoFestas}
+        />;
       case 4:
         return <Votacao data={{ dadosVotacao: cityData.dadosVotacao, deputadosFederais: cityData.deputadosFederais }} />;
       case 5:
-        return <Emendas data={cityData.emendas || []} />;
+        return <Emendas data={cityData.emendas || []} cidadeId={cityData.id} onUpdate={fetchCityData} />;
       case 6:
-        return <Liderancas data={cityData.liderancas || []} />;
+        return <Liderancas data={cityData.liderancas || []} cidadeId={cityData.id} onUpdate={fetchCityData} />;
       case 7:
         return <Pautas data={cityData.pautas || []} />;
       default:
@@ -91,7 +102,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1600px] mx-auto">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -117,14 +128,14 @@ export default function Home() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mb-6"
         >
-          <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-thin scrollbar-thumb-primary-medium scrollbar-track-primary">
+          <div className="flex flex-wrap gap-2 pb-2">
             {tabs.map((tab) => (
               <motion.button
                 key={tab.id}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setActiveTab(tab.id)}
-                className={`tab-button whitespace-nowrap flex items-center gap-2 ${
+                className={`tab-button flex items-center gap-2 ${
                   activeTab === tab.id ? 'tab-active' : 'tab-inactive'
                 }`}
               >
