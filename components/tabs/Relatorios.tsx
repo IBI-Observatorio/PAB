@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -35,23 +35,7 @@ export default function Relatorios({ currentCityId }: RelatoriosProps) {
   const [cityData, setCityData] = useState<any>(null);
   const reportRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    fetchCities();
-  }, []);
-
-  useEffect(() => {
-    if (currentCityId) {
-      setSelectedCity(currentCityId);
-    }
-  }, [currentCityId]);
-
-  useEffect(() => {
-    if (selectedCity) {
-      fetchCityData();
-    }
-  }, [selectedCity]);
-
-  const fetchCities = async () => {
+  const fetchCities = useCallback(async () => {
     try {
       const response = await fetch('/api/cidades');
       const data = await response.json();
@@ -59,9 +43,9 @@ export default function Relatorios({ currentCityId }: RelatoriosProps) {
     } catch (error) {
       console.error('Erro ao carregar cidades:', error);
     }
-  };
+  }, []);
 
-  const fetchCityData = async () => {
+  const fetchCityData = useCallback(async () => {
     if (!selectedCity) return;
     setLoading(true);
     try {
@@ -73,7 +57,23 @@ export default function Relatorios({ currentCityId }: RelatoriosProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCity]);
+
+  useEffect(() => {
+    fetchCities();
+  }, [fetchCities]);
+
+  useEffect(() => {
+    if (currentCityId) {
+      setSelectedCity(currentCityId);
+    }
+  }, [currentCityId]);
+
+  useEffect(() => {
+    if (selectedCity) {
+      fetchCityData();
+    }
+  }, [selectedCity, fetchCityData]);
 
   const toggleTab = (tabId: string) => {
     setSelectedTabs(prev =>

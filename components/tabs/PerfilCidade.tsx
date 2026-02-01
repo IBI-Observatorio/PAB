@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -71,12 +72,13 @@ export default function PerfilCidade({ data }: PerfilCidadeProps) {
             whileHover={{ scale: 1.05 }}
             className="relative"
           >
-            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl bg-primary-dark">
+            <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl bg-primary-dark">
               {data.fotoPerfil ? (
-                <img
+                <Image
                   src={data.fotoPerfil}
                   alt={data.nome || 'Cidade'}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-primary-medium">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 
 interface City {
@@ -18,11 +18,7 @@ export default function CitySelector({ selectedCity, onCityChange }: CitySelecto
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchCities();
-  }, []);
-
-  const fetchCities = async () => {
+  const fetchCities = useCallback(async () => {
     try {
       const response = await fetch('/api/cidades');
       const data = await response.json();
@@ -35,7 +31,11 @@ export default function CitySelector({ selectedCity, onCityChange }: CitySelecto
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCity, onCityChange]);
+
+  useEffect(() => {
+    fetchCities();
+  }, [fetchCities]);
 
   const selectedCityName = cities.find(c => c.id === selectedCity)?.nome || 'Selecione uma cidade';
 

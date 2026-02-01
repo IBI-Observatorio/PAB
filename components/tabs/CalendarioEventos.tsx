@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -141,10 +142,11 @@ export default function CalendarioEventos({ data, datasHistoricas, periodoFestas
                             whileHover={{ scale: 1.1 }}
                             className="aspect-square rounded-lg overflow-hidden bg-primary-medium/30"
                           >
-                            <img
+                            <Image
                               src={foto}
                               alt={`${evento.festaTradicional} - foto ${fotoIndex + 1}`}
-                              className="w-full h-full object-cover"
+                              fill
+                              className="object-cover"
                             />
                           </motion.div>
                         ))}

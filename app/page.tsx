@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CitySelector from '@/components/CitySelector';
 import PerfilCidade from '@/components/tabs/PerfilCidade';
@@ -29,13 +29,7 @@ export default function Home() {
   const [cityData, setCityData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (selectedCity) {
-      fetchCityData();
-    }
-  }, [selectedCity]);
-
-  const fetchCityData = async () => {
+  const fetchCityData = useCallback(async () => {
     if (!selectedCity) return;
 
     setLoading(true);
@@ -48,7 +42,13 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCity]);
+
+  useEffect(() => {
+    if (selectedCity) {
+      fetchCityData();
+    }
+  }, [selectedCity, fetchCityData]);
 
   const renderTabContent = () => {
     // Aba de Relatórios tem seu próprio seletor de cidade, funciona independente
