@@ -7,33 +7,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Cidade {
-  id                Int                @id @default(autoincrement())
-  nome              String
-  gentilico         String
-  dataFundacao      DateTime
-  dataAniversario   DateTime
-  breveHistorico    String
-  padroeiro         String
-  pratoTipico       String
-  fotoPerfil        String?
-  fotoBackground    String?
-  datasHistoricas   String?            // Datas de Relevância Histórica / Feriados Locais (ex: "04/08 (Aniv.); 24/06 (S. João)")
-  periodoFestas     String?            // Período de Exposições e Festas (ex: "Outubro: Festa de São Benedito")
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  dadosDemograficos DadosDemograficos?
-  dadosVotacao      DadosVotacao?
-  deputadosFederais DeputadoFederal[]
-  emendas           Emenda[]
-  eventosProximos   EventoProximo[]
-  liderancas        Lideranca[]
-  pautas            Pauta[]
+model cidade {
+  id                 Int                 @id @default(autoincrement())
+  nome               String
+  gentilico          String
+  dataFundacao       DateTime
+  dataAniversario    DateTime
+  breveHistorico     String
+  padroeiro          String
+  pratoTipico        String
+  fotoPerfil         String?
+  fotoBackground     String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime
+  datasHistoricas    String?
+  periodoFestas      String?
+  dadosDemograficos  dadosDemograficos?
+  dadosVotacao       dadosVotacao?
+  deputadosFederais  deputadoFederal[]
+  emendas            emenda[]
+  eventosProximos    eventoProximo[]
+  liderancas         lideranca[]
+  pautas             pauta[]
 
   @@map("cidades")
 }
 
-model DadosDemograficos {
+model dadosDemograficos {
   id                    Int      @id @default(autoincrement())
   cidadeId              Int      @unique
   percentualRural       Float
@@ -46,26 +46,13 @@ model DadosDemograficos {
   taxaAlfabetizacao     Float
   principaisBairros     String
   createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  cidade                Cidade   @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
+  updatedAt             DateTime
+  cidade                cidade   @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
 
   @@map("dados_demograficos")
 }
 
-model EventoProximo {
-  id               Int      @id @default(autoincrement())
-  cidadeId         Int
-  festaTradicional String
-  dataFeriado      DateTime
-  fotos            String
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  cidade           Cidade   @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
-
-  @@map("eventos_proximos")
-}
-
-model DadosVotacao {
+model dadosVotacao {
   id                               Int      @id @default(autoincrement())
   cidadeId                         Int      @unique
   votosPauloAlexandre2022          Int
@@ -79,13 +66,30 @@ model DadosVotacao {
   votosLegendaPSDB45               Int
   votosLegendaPSD55                Int
   createdAt                        DateTime @default(now())
-  updatedAt                        DateTime @updatedAt
-  cidade                           Cidade   @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
+  updatedAt                        DateTime
+  cidade                           cidade   @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
 
   @@map("dados_votacao")
 }
 
-model Emenda {
+model deputadoFederal {
+  id         Int      @id @default(autoincrement())
+  cidadeId   Int
+  nome       String
+  nomeUrna   String
+  partido    String
+  numeroUrna String
+  votos2022  Int
+  eleito     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  posicao    Int      @default(0)
+  cidade     cidade   @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
+
+  @@map("deputados_federais")
+}
+
+model emenda {
   id                  Int      @id @default(autoincrement())
   cidadeId            Int
   codigoEmenda        String?
@@ -103,13 +107,26 @@ model Emenda {
   valorLiquidado      Float    @default(0)
   valorPago           Float    @default(0)
   createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-  cidade              Cidade   @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
+  updatedAt           DateTime
+  cidade              cidade   @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
 
   @@map("emendas")
 }
 
-model Lideranca {
+model eventoProximo {
+  id               Int      @id @default(autoincrement())
+  cidadeId         Int
+  festaTradicional String
+  dataFeriado      DateTime
+  fotos            String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime
+  cidade           cidade   @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
+
+  @@map("eventos_proximos")
+}
+
+model lideranca {
   id                 Int       @id @default(autoincrement())
   cidadeId           Int
   nomeLideranca      String
@@ -122,13 +139,13 @@ model Lideranca {
   votosPrevistos2026 String?
   dataVisitaGestor   DateTime?
   createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-  cidade             Cidade    @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
+  updatedAt          DateTime
+  cidade             cidade    @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
 
   @@map("liderancas")
 }
 
-model Pauta {
+model pauta {
   id                     Int      @id @default(autoincrement())
   cidadeId               Int
   dataPublicacao         DateTime
@@ -144,25 +161,8 @@ model Pauta {
   statusResposta         String
   tempoAtraso            Int
   createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
-  cidade                 Cidade   @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
+  updatedAt              DateTime
+  cidade                 cidade   @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
 
   @@map("pautas")
-}
-
-model DeputadoFederal {
-  id         Int      @id @default(autoincrement())
-  cidadeId   Int
-  nome       String
-  nomeUrna   String
-  partido    String
-  numeroUrna String
-  votos2022  Int
-  eleito     Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  posicao    Int      @default(0)
-  cidade     Cidade   @relation(fields: [cidadeId], references: [id], onDelete: Cascade)
-
-  @@map("deputados_federais")
 }
