@@ -519,7 +519,7 @@ export default function Liderancas({ data, cidadeId, onUpdate }: LiderancasProps
                       {(previewUrl || formData.fotoLideranca) ? (
                         <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-purple-500">
                           <Image
-                            src={previewUrl || formData.fotoLideranca}
+                            src={previewUrl || formData.fotoLideranca || ''}
                             alt="Preview"
                             fill
                             className="object-cover"
