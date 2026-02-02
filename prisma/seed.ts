@@ -47,7 +47,6 @@ async function main() {
             percentualEvangelico: cidade.dadosDemograficos.percentualEvangelico,
             percentualSemReligiao: cidade.dadosDemograficos.percentualSemReligiao,
             religiaoPredominante: cidade.dadosDemograficos.religiaoPredominante,
-            idh: cidade.dadosDemograficos.idh,
             taxaAlfabetizacao: cidade.dadosDemograficos.taxaAlfabetizacao,
             principaisBairros: cidade.dadosDemograficos.principaisBairros,
           },
