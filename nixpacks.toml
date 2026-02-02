@@ -1,0 +1,3 @@
+# Desabilitar cache do nixpacks para forçar rebuild limpo
+[caches]
+# Vazio para desabilitar todos os caches
