@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface DeputadoFederal {
   id: number;
@@ -76,11 +75,6 @@ export default function Votacao({ data }: VotacaoProps) {
 
   // Verificar se Paulo Alexandre está no top 5
   const pauloNoTop5 = pauloAlexandre ? pauloAlexandre.posicao <= 5 : false;
-
-  const partidosData = votacaoData ? [
-    { partido: 'PSDB', votos: votacaoData.votosPSDBTotal2022 },
-    { partido: 'PSD', votos: votacaoData.votosPSDTotal2022 },
-  ] : [];
 
   return (
     <motion.div
@@ -163,32 +157,6 @@ export default function Votacao({ data }: VotacaoProps) {
               <p className="text-2xl font-bold text-green-400">{pauloAlexandre.votos2022.toLocaleString('pt-BR')}</p>
               <p className="text-xs text-gray-400">votos</p>
             </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Partidos */}
-      {votacaoData && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="card"
-        >
-          <h3 className="text-xl font-bold mb-4">Votos por Partido</h3>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={partidosData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#002366" />
-                <XAxis dataKey="partido" stroke="#ffffff" />
-                <YAxis stroke="#ffffff" />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#0A0A1A', border: '1px solid #002366' }}
-                  labelStyle={{ color: '#ffffff' }}
-                />
-                <Bar dataKey="votos" fill="#10B981" />
-              </BarChart>
-            </ResponsiveContainer>
           </div>
         </motion.div>
       )}
